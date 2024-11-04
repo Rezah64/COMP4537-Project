@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Users, LogOut, Activity, User } from 'lucide-react';
 import { useAuth } from '../auth/useAuth';
 import { mockUserStats } from '../utils/mockData';
+import { api } from '../auth/axios';
+import { User as userType} from '../types';
 import toast from 'react-hot-toast';
 
 interface UserStats {
@@ -12,17 +14,32 @@ interface UserStats {
 }
 
 export default function AdminDashboard() {
-  const [users, setUsers] = useState<UserStats[]>([]);
+  const [users, setUsers] = useState<userType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { logout } = useAuth();
   const navigate = useNavigate();
 
+  // useEffect(() => {
+  //   // Simulate API call
+  //   const fetchUsers = async () => {
+  //     try {
+  //       await new Promise(resolve => setTimeout(resolve, 1000));
+  //       setUsers(mockUserStats);
+  //     } catch (error) {
+  //       toast.error('Failed to load user statistics');
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
+
+  //   fetchUsers();
+  // }, []);  
+  
   useEffect(() => {
-    // Simulate API call
     const fetchUsers = async () => {
       try {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        setUsers(mockUserStats);
+        const response = await api.get<userType[]>('/users');
+        setUsers(response.data);
       } catch (error) {
         toast.error('Failed to load user statistics');
       } finally {
@@ -32,6 +49,8 @@ export default function AdminDashboard() {
 
     fetchUsers();
   }, []);
+
+
 
   const handleLogout = async () => {
     try {
@@ -110,13 +129,13 @@ export default function AdminDashboard() {
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      User
+                      Name
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Email
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       API Calls
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Last Active
                     </th>
                   </tr>
                 </thead>
@@ -142,7 +161,27 @@ export default function AdminDashboard() {
                               <User className="h-8 w-8 text-gray-400" />
                             </div>
                             <div className="ml-4">
+                              <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="flex-shrink-0 h-8 w-8">
+                              <User className="h-8 w-8 text-gray-400" />
+                            </div>
+                            <div className="ml-4">
                               <div className="text-sm font-medium text-gray-900">{user.email}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="flex-shrink-0 h-8 w-8">
+                              <User className="h-8 w-8 text-gray-400" />
+                            </div>
+                            <div className="ml-4">
+                              <div className="text-sm font-medium text-gray-900">{user.role}</div>
                             </div>
                           </div>
                         </td>
@@ -151,9 +190,6 @@ export default function AdminDashboard() {
                           <div className="text-sm text-gray-500">
                             {user.apiCalls >= 20 ? 'Limit reached' : `${20 - user.apiCalls} remaining`}
                           </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {new Date(user.lastActive).toLocaleString()}
                         </td>
                       </tr>
                     ))
