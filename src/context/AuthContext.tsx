@@ -14,7 +14,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
-  incrementApiCalls: () => void;
+  incrementApiCalls: () => boolean;
   isLoading: boolean;
 }
 
@@ -103,7 +103,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  
   const incrementApiCalls = () => {
     if (user) {
       if (user.apiCalls >= 20) {

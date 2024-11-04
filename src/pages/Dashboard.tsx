@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MessageSquare, Send, LogOut, Smile } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { getResponse } from '../utils/mockResponses';
+import { sendMessageToAPI } from '../utils/api';
 import toast from 'react-hot-toast';
+import { Smile, LogOut, Send } from 'react-feather';
 
 interface Message {
   id: number;
@@ -38,15 +38,11 @@ export default function Dashboard() {
         },
       ]);
     }
-  }, [user]);
+  }, [user, messages.length]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
-
-    if (!incrementApiCalls()) {
-      return;
-    }
 
     const userMessage = { id: Date.now(), text: input, isUser: true };
     setMessages(prev => [...prev, userMessage]);
@@ -54,18 +50,19 @@ export default function Dashboard() {
     setIsLoading(true);
 
     try {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Get mock response
-      const response = getResponse(input);
-      
-      setMessages(prev => [...prev, { 
-        id: Date.now(), 
-        text: response, 
-        isUser: false 
+      // Send input to the API and get response
+      const response = await sendMessageToAPI(input);
+      setMessages(prev => [...prev, {
+        id: Date.now(),
+        text: response.response,
+        isUser: false
       }]);
-    } catch (error) {
+
+      // Increment API call count only if the API call is successful
+      if (!incrementApiCalls()) {
+        return;
+      }
+    } catch {
       toast.error('Failed to get response');
     } finally {
       setIsLoading(false);
@@ -76,7 +73,7 @@ export default function Dashboard() {
     try {
       await logout();
       navigate('/login');
-    } catch (error) {
+    } catch {
       toast.error('Failed to logout. Please try again.');
     }
   };

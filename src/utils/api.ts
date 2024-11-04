@@ -23,7 +23,7 @@ export async function handleResponse(response: Response) {
 
   try {
     return await response.json();
-  } catch (error) {
+  } catch {
     throw new Error('Invalid response format from server');
   }
 }
@@ -32,7 +32,7 @@ export async function handleResponse(response: Response) {
 export async function apiRequest(
   endpoint: string,
   options: RequestInit = {}
-): Promise<any> {
+): Promise<unknown> {
   try {
     const response = await fetch(`${BASE_URL}${endpoint}`, {
       ...options,
@@ -48,5 +48,32 @@ export async function apiRequest(
       throw error;
     }
     throw new Error('Network error occurred');
+  }
+}
+
+// New function to send a POST request to the API endpoint
+interface ApiResponse {
+  response: string;
+}
+
+export async function sendMessageToAPI(message: string): Promise<ApiResponse> {
+  try {
+    const response = await fetch(`${BASE_URL}/process`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ message }),
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to send the message');
+    }
+
+    const data: ApiResponse = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error communicating with the API:', error);
+    throw error;
   }
 }

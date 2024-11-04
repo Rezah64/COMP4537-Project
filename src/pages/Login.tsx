@@ -19,7 +19,7 @@ export default function Login() {
       } else {
         navigate('/dashboard');
       }
-    } catch (error) {
+    } catch {
       toast.error('Invalid email or password');
     }
   };
