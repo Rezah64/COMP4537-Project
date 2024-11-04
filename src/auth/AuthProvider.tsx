@@ -60,20 +60,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const incrementApiCalls = () => {
-    if (!user) return false;
-    if (user.apiCalls >= API_CALL_LIMIT) {
+const incrementApiCalls = () => {
+  if (!user) return false;
+
+  // Check if `apiCalls` is not a number and set a default value if needed
+  setUser(prev => {
+    if (!prev) return null;
+    const currentApiCalls = typeof prev.apiCalls === 'number' ? prev.apiCalls : 0;
+
+    if (currentApiCalls >= API_CALL_LIMIT) {
       setError('API call limit reached');
-      return false;
+      console.log('API call limit reached');
+      return prev;
     }
-    
-    setUser(prev => prev ? {
+
+    const updatedUser = {
       ...prev,
-      apiCalls: prev.apiCalls + 1
-    } : null);
-    
-    return true;
-  };
+      apiCalls: currentApiCalls + 1,
+    };
+
+    console.log('Updated user after increment:', updatedUser);
+    return updatedUser;
+  });
+
+  return true;
+};
+
+
 
   return (
     <AuthContext.Provider
