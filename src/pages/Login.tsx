@@ -1,26 +1,40 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Smile } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../auth/useAuth';
 import toast from 'react-hot-toast';
+import axios from 'axios';
+
+interface LocationState {
+  from: {
+    pathname: string;
+  };
+}
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login, isLoading } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await login(email, password);
-      if (email === 'admin@admin.com') {
-        navigate('/admin');
+      await login({ email, password });
+      
+      const from = (location.state as LocationState)?.from?.pathname || '/dashboard';
+      navigate(from, { replace: true });
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          toast.error('Invalid email or password');
+        } else {
+          toast.error('An error occurred. Please try again.');
+        }
       } else {
-        navigate('/dashboard');
+        toast.error('An unexpected error occurred');
       }
-    } catch {
-      toast.error('Invalid email or password');
     }
   };
 
@@ -68,9 +82,10 @@ export default function Login() {
 
           <button
             type="submit"
-            className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
+            disabled={isLoading}
+            className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Sign in
+            {isLoading ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
 

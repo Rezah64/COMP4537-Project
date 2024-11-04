@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Sparkles } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../auth/useAuth';
 import toast from 'react-hot-toast';
 
 export default function Register() {
@@ -14,10 +14,11 @@ export default function Register() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await register(email, password, name);
+      await register({email, password, name});
       navigate('/dashboard');
       toast.success('Welcome aboard! 🎉');
     } catch (error) {
+      console.log(error)
       toast.error('Registration failed. Please try again.');
     }
   };

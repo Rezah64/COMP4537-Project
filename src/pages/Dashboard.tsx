@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../auth/useAuth';
 import { sendMessageToAPI } from '../utils/api';
 import toast from 'react-hot-toast';
 import { Smile, LogOut, Send } from 'react-feather';

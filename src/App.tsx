@@ -1,21 +1,11 @@
-import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
-import { AuthProvider, useAuth } from './context/AuthContext';
-
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated } = useAuth();
-  return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;
-};
-
-const AdminRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, user } = useAuth();
-  return isAuthenticated && user?.isAdmin ? <>{children}</> : <Navigate to="/login" />;
-};
+import { AuthProvider } from './auth/AuthProvider';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
@@ -23,8 +13,11 @@ function App() {
       <BrowserRouter>
         <Toaster position="top-center" />
         <Routes>
+          {/* Public routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          
+          {/* Protected routes */}
           <Route
             path="/dashboard"
             element={
@@ -33,15 +26,22 @@ function App() {
               </ProtectedRoute>
             }
           />
+          
+          {/* Admin routes */}
           <Route
             path="/admin"
             element={
-              <AdminRoute>
+              <ProtectedRoute requireAdmin>
                 <AdminDashboard />
-              </AdminRoute>
+              </ProtectedRoute>
             }
           />
-          <Route path="/" element={<Navigate to="/login" />} />
+          
+          {/* Default redirect */}
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          
+          {/* Catch all route */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

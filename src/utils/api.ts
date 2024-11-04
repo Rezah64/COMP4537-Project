@@ -1,11 +1,9 @@
 // API configuration and helper functions
-const API_URL = import.meta.env.VITE_API_URL;
+export const LLM_API_URL = import.meta.env.VITE_LLM_API_URL || 'http://localhost:3000';
 
-if (!API_URL) {
-  console.warn('API_URL is not defined in environment variables. Using default URL.');
+if (!LLM_API_URL) {
+  console.warn('API_URL is not defined in environment variables. Using localhost instead.');
 }
-
-export const BASE_URL = API_URL || 'http://localhost:3000';
 
 // Helper function to handle JSON responses
 export async function handleResponse(response: Response) {
@@ -28,13 +26,12 @@ export async function handleResponse(response: Response) {
   }
 }
 
-// API request helper with proper error handling
 export async function apiRequest(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<unknown> {
   try {
-    const response = await fetch(`${BASE_URL}${endpoint}`, {
+    const response = await fetch(`${LLM_API_URL}${endpoint}`, {
       ...options,
       credentials: 'include',
       headers: {
@@ -51,14 +48,13 @@ export async function apiRequest(
   }
 }
 
-// New function to send a POST request to the API endpoint
 interface ApiResponse {
   response: string;
 }
 
 export async function sendMessageToAPI(message: string): Promise<ApiResponse> {
   try {
-    const response = await fetch(`${BASE_URL}/process`, {
+    const response = await fetch(`${LLM_API_URL}/process`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
