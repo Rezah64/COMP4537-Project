@@ -18,22 +18,6 @@ export default function AdminDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const { logout } = useAuth();
   const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   // Simulate API call
-  //   const fetchUsers = async () => {
-  //     try {
-  //       await new Promise(resolve => setTimeout(resolve, 1000));
-  //       setUsers(mockUserStats);
-  //     } catch (error) {
-  //       toast.error('Failed to load user statistics');
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-
-  //   fetchUsers();
-  // }, []);  
   
   useEffect(() => {
     const fetchUsers = async () => {
