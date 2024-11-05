@@ -1,11 +1,9 @@
-// API configuration and helper functions
 export const LLM_API_URL = import.meta.env.VITE_LLM_API_URL || 'http://localhost:3000';
 
 if (!LLM_API_URL) {
   console.warn('API_URL is not defined in environment variables. Using localhost instead.');
 }
 
-// Helper function to handle JSON responses
 export async function handleResponse(response: Response) {
   if (!response.ok) {
     let errorMessage = 'An error occurred';
@@ -13,7 +11,6 @@ export async function handleResponse(response: Response) {
       const errorData = await response.json();
       errorMessage = errorData.message || errorMessage;
     } catch {
-      // If JSON parsing fails, use status text
       errorMessage = response.statusText || errorMessage;
     }
     throw new Error(errorMessage);
