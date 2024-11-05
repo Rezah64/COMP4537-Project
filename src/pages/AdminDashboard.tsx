@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, LogOut, Activity, User } from 'lucide-react';
 import { useAuth } from '../auth/useAuth';
-import { mockUserStats } from '../utils/mockData';
 import toast from 'react-hot-toast';
 import { User as UserType } from '../types'
 import { api } from '../auth/axios'
@@ -51,6 +50,7 @@ export default function AdminDashboard() {
       await logout();
       navigate('/login');
     } catch (error) {
+      console.log(error)
       toast.error('Failed to logout. Please try again.');
     }
   };

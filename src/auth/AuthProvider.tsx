@@ -105,7 +105,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 const incrementApiCalls = () => {
   if (!user) return false;
 
-  // Check if `apiCalls` is not a number and set a default value if needed
   setUser(prev => {
     if (!prev) return null;
     const currentApiCalls = typeof prev.apiCalls === 'number' ? prev.apiCalls : 0;
