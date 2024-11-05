@@ -27,7 +27,6 @@ export default function Dashboard() {
     scrollToBottom();
   }, [messages]);
 
-  // Add welcome message when component mounts
   useEffect(() => {
     if (messages.length === 0 && user) {
       setMessages([
@@ -50,7 +49,6 @@ export default function Dashboard() {
     setIsLoading(true);
 
     try {
-      // Send input to the API and get response
       const response = await sendMessageToAPI(input);
       setMessages(prev => [...prev, {
         id: Date.now(),
@@ -58,7 +56,6 @@ export default function Dashboard() {
         isUser: false
       }]);
 
-      // Increment API call count only if the API call is successful
       if (!incrementApiCalls()) {
         return;
       }
