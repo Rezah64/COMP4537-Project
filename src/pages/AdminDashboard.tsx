@@ -1,49 +1,61 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, LogOut, Activity, User } from 'lucide-react';
 import { useAuth } from '../auth/useAuth';
-import { mockUserStats } from '../utils/mockData';
-import { api } from '../auth/axios';
-import { User as userType} from '../types';
 import toast from 'react-hot-toast';
+import { User as UserType } from '../types'
+import { api } from '../auth/axios'
 
 interface UserStats {
+  id: string;
   email: string;
+  name: string;
+  role: string;
   apiCalls: number;
   lastActive: string;
 }
 
+const getAllUsers = async (): Promise<UserType[]> => {
+  const response = await api.get<UserType[]>('/admin/users');
+  return response.data;
+};
+
+
 export default function AdminDashboard() {
-  const [users, setUsers] = useState<userType[]>([]);
+  const [users, setUsers] = useState<UserStats[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { logout } = useAuth();
   const navigate = useNavigate();
   
   useEffect(() => {
     const fetchUsers = async () => {
-      try {
-        const response = await api.get<userType[]>('/users');
-        setUsers(response.data);
-      } catch (error) {
-        toast.error('Failed to load user statistics');
-      } finally {
-        setIsLoading(false);
-      }
+        try {
+            setIsLoading(true);
+            const data = await getAllUsers();
+            setUsers(data);
+        } catch (err) {
+            setError('Failed to fetch users');
+            console.error('Error fetching users:', err);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     fetchUsers();
-  }, []);
-
-
+}, []);
 
   const handleLogout = async () => {
     try {
       await logout();
       navigate('/login');
     } catch (error) {
+      console.log(error)
       toast.error('Failed to logout. Please try again.');
     }
   };
+
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50">

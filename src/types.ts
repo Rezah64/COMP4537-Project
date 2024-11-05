@@ -4,6 +4,8 @@ export interface User {
     name: string;
     role: string
     apiCalls: number;
+    createdAt: string;
+    lastActive: string;
   }
   
   export interface LoginData {

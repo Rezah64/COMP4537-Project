@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Smile } from 'lucide-react';
 import { useAuth } from '../auth/useAuth';
@@ -16,15 +16,12 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, isLoading } = useAuth();
+  const { login, user, isLoading } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await login({ email, password });
-      
-      const from = (location.state as LocationState)?.from?.pathname || '/dashboard';
-      navigate(from, { replace: true });
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 401) {
@@ -37,6 +34,17 @@ export default function Login() {
       }
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      if (user.role === 'admin') {
+        navigate('/admin', { replace: true });
+      } else {
+        const from = (location.state as LocationState)?.from?.pathname || '/dashboard';
+        navigate(from, { replace: true });
+      }
+    }
+  }, [user, navigate, location.state]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-100 to-indigo-100 flex items-center justify-center p-4">
