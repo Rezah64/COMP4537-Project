@@ -77,7 +77,7 @@ export default function Register() {
               onChange={(e) => setPassword(e.target.value)}
               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               placeholder="••••••••"
-              minLength={6}
+              minLength={3}
             />
             <p className="mt-1 text-xs text-gray-500">Must be at least 6 characters</p>
           </div>
