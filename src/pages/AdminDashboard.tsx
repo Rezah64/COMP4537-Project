@@ -10,7 +10,7 @@ interface UserStats {
   id: string;
   email: string;
   name: string;
-  role: string;
+  isAdmin: boolean;
   apiCalls: number;
   lastActive: string;
 }
@@ -156,7 +156,7 @@ export default function AdminDashboard() {
                     </tr>
                   ) : (
                     users.map((user, index) => {
-                      if (user.role === "admin") {
+                      if (user.isAdmin) {
                         return null;
                       }
                     
@@ -188,7 +188,7 @@ export default function AdminDashboard() {
                                 <User className="h-8 w-8 text-gray-400" />
                               </div>
                               <div className="ml-4">
-                                <div className="text-sm font-medium text-gray-900">{user.role}</div>
+                                <div className="text-sm font-medium text-gray-900">{user.isAdmin ? "Admin" : "User"}</div>
                               </div>
                             </div>
                           </td>
