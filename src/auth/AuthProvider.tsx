@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         id: response.data.id,
         email: response.data.email,
         name: response.data.name,
-        isAdmin: response.data.isAdmin,
+        role: response.data.role,
         apiCalls: response.data.apiCalls,
         createdAt: response.data.createdAt,
         lastActive: response.data.lastActive

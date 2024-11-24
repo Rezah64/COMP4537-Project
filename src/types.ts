@@ -2,7 +2,7 @@ export interface User {
     id: string;
     email: string;
     name: string;
-    isAdmin: boolean;
+    role: string;
     apiCalls: number;
     createdAt: string;
     lastActive: string;
