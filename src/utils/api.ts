@@ -49,14 +49,14 @@ interface ApiResponse {
   response: string;
 }
 
-export async function sendMessageToAPI(message: string): Promise<ApiResponse> {
+export async function sendMessageToAPI(message: string, email: string | undefined): Promise<ApiResponse> {
   try {
     const response = await fetch(`${LLM_API_URL}/process`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ message }),
+      body: JSON.stringify({ message, email }),
     });
     
     if (!response.ok) {

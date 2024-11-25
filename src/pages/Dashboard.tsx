@@ -49,7 +49,7 @@ export default function Dashboard() {
     setIsLoading(true);
 
     try {
-      const response = await sendMessageToAPI(input);
+      const response = await sendMessageToAPI(input, user?.email);
       setMessages(prev => [...prev, {
         id: Date.now(),
         text: response.response,
