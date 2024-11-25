@@ -12,8 +12,10 @@ export const api = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json'
-  }
+  },
+  withCredentials: true
 });
+
 
 const attachToken = (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
   const tokens = storage.getTokens();
