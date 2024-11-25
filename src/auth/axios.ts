@@ -1,14 +1,25 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_GATEWAY_URL;
+const apiUrl = import.meta.env.VITE_API_GATEWAY_URL;
+const frontendUrl = import.meta.env.VITE_FRONTEND_URL
+
+if (!apiUrl || !frontendUrl) {
+  throw new Error("Auth url & react app url must be defined in env vars.")
+}
 
 export const api = axios.create({
-  baseURL: API_URL,
+  baseURL: apiUrl,
   headers: {
     'Content-Type': 'application/json'
   },
   withCredentials: true
 });
+
+api.interceptors.request.use((config) => {
+  config.headers['Origin'] = frontendUrl;
+  return config;
+});
+
 
 api.interceptors.response.use(
   (response) => response,
