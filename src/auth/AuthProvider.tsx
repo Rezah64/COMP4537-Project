@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { User, LoginData, RegisterData, AuthResponse } from '../types';
 import { AuthContext } from './useAuth';
 import { api } from './axios';
-import { storage } from './storage';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -16,15 +15,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const checkAuth = async () => {
     console.log('Checking auth...');
     try {
-      const tokens = storage.getTokens();
-      console.log('Stored tokens:', tokens);
-
-      if (!tokens?.accessToken) {
-        console.log('No tokens found');
-        setIsLoading(false);
-        return;
-      }
-
       const response = await api.get<User>('/auth/me');
       console.log('/me response:', response.data);
       
@@ -36,13 +26,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         apiCalls: response.data.apiCalls,
         createdAt: response.data.createdAt,
         lastActive: response.data.lastActive
-        }
+      }
 
       setUser(userData);
       
     } catch (error) {
       console.error('Auth check failed:', error);
-      storage.clearTokens();
       setUser(null);
     } finally {
       setIsLoading(false);
@@ -58,10 +47,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setError(null);
     try {
       const response = await api.post<AuthResponse>('/auth/login', data);
-      storage.setTokens({
-        accessToken: response.data.accessToken,
-        refreshToken: response.data.refreshToken
-      });
       setUser(response.data.user);
     } catch (err) {
       setError('Failed to login');
@@ -76,10 +61,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setError(null);
     try {
       const response = await api.post<AuthResponse>('/auth/register', data);
-      storage.setTokens({
-        accessToken: response.data.accessToken,
-        refreshToken: response.data.refreshToken
-      });
       setUser(response.data.user);
     } catch (err) {
       setError('Failed to register');
@@ -92,7 +73,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async () => {
     setIsLoading(true);
     try {
-      storage.clearTokens();
+      await api.post('/auth/logout');
       setUser(null);
     } catch (err) {
       setError('Failed to logout');
@@ -102,32 +83,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-const incrementApiCalls = () => {
-  if (!user) return false;
+  const incrementApiCalls = () => {
+    if (!user) return false;
 
-  setUser(prev => {
-    if (!prev) return null;
-    const currentApiCalls = typeof prev.apiCalls === 'number' ? prev.apiCalls : 0;
+    setUser(prev => {
+      if (!prev) return null;
+      const currentApiCalls = typeof prev.apiCalls === 'number' ? prev.apiCalls : 0;
 
-    if (currentApiCalls >= API_CALL_LIMIT) {
-      setError('API call limit reached');
-      console.log('API call limit reached');
-      return prev;
-    }
+      if (currentApiCalls >= API_CALL_LIMIT) {
+        setError('API call limit reached');
+        console.log('API call limit reached');
+        return prev;
+      }
 
-    const updatedUser = {
-      ...prev,
-      apiCalls: currentApiCalls + 1,
-    };
+      const updatedUser = {
+        ...prev,
+        apiCalls: currentApiCalls + 1,
+      };
 
-    console.log('Updated user after increment:', updatedUser);
-    return updatedUser;
-  });
+      console.log('Updated user after increment:', updatedUser);
+      return updatedUser;
+    });
 
-  return true;
-};
-
-
+    return true;
+  };
 
   return (
     <AuthContext.Provider
