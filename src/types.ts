@@ -17,12 +17,7 @@ export interface User {
     name: string;
   }
   
-  export interface AuthTokens {
-    accessToken: string;
-    refreshToken: string;
-  }
-  
-  export interface AuthResponse extends AuthTokens {
+  export interface AuthResponse {
     user: User;
   }
   
