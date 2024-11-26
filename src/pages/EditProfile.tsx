@@ -67,10 +67,10 @@ export default function EditProfile() {
       const userId = user?.id;
       if (userId) {
         await deleteAccount(userId);
+        navigate('/');
       } else {
         throw new Error("User ID is undefined");
       }
-
     } catch (error) {
       console.log("An error occured ***************", error);
     }
