@@ -39,7 +39,7 @@ export default function Login() {
 
   useEffect(() => {
     if (user) {
-      if (user.role === 'admin') {
+      if (user.isAdmin) {
         navigate('/admin', { replace: true });
       } else {
         const from = (location.state as LocationState)?.from?.pathname || '/dashboard';
