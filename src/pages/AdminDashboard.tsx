@@ -17,22 +17,12 @@ const getAllUsers = async (): Promise<UserType[]> => {
 
 const getEndpointStats = async (): Promise<EndpointStat[]> => {
   try {
-    const response = await api.get<{
-      statusCode: number;
-      body: string;
-      headers?: Record<string, string>;
-    }>('/admin/endpointStats');
-
-    if (response.data.statusCode === 200) {
-      const endpointStats = JSON.parse(response.data.body);
+    const response = await api.get('/admin/endpointStats');
+      const endpointStats = response.data;
       if (response.data) {
         incrementCounterAPI('/admin/endpointStats');
       }
       return endpointStats;
-    } else {
-      console.error('Error fetching endpoint stats:', response.data);
-      return []; 
-    }
   } catch (err) {
     console.error('Error fetching endpoint stats:', err);
     return []; 
@@ -127,7 +117,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="ml-5 w-0 flex-1">
                   <dl>
-                    <dt className="text-sm font-medium text-gray-500 truncate">Total API Calls</dt>
+                    <dt className="text-sm font-medium text-gray-500 truncate">Total User Prompted API Calls</dt>
                     <dd className="text-lg font-medium text-gray-900">
                       {users.reduce((sum, user) => sum + user.apiCalls, 0)}
                     </dd>
@@ -178,7 +168,6 @@ export default function AdminDashboard() {
                         <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
                               <div className="flex-shrink-0 h-8 w-8">
-                                <User className="h-8 w-8 text-gray-400" />
                               </div>
                               <div className="ml-4">
                                 <div className="text-sm font-medium text-gray-900">{stat.method}</div>
@@ -188,7 +177,6 @@ export default function AdminDashboard() {
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
                               <div className="flex-shrink-0 h-8 w-8">
-                                <User className="h-8 w-8 text-gray-400" />
                               </div>
                               <div className="ml-4">
                                 <div className="text-sm font-medium text-gray-900">{stat.endpoint}</div>
