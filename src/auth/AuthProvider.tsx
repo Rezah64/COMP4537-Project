@@ -163,7 +163,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         logout,
         incrementApiCalls,
         updateName,
-        deleteAccount
+        deleteAccount,
+        updateUser: setUser
       }}
     >
       {children}
