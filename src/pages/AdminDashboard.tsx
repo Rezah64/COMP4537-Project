@@ -36,14 +36,14 @@ export default function AdminDashboard() {
     const fetchUsers = async () => {
         try {
             setIsLoading(true);
-            // const [usersData, endpointsData] = await Promise.all([
-            //   getAllUsers(),
-            //   getEndpointStats()
-            // ])
-            // setUsers(usersData);
-            // setEndpointStats(endpointsData);
-            const data = await getAllUsers();
-            setUsers(data);
+            const [usersData, endpointsData] = await Promise.all([
+              getAllUsers(),
+              getEndpointStats()
+            ])
+            setUsers(usersData);
+            setEndpointStats(endpointsData);
+            // const data = await getAllUsers();
+            // setUsers(data);
         } catch (err) {
             setError('Failed to fetch data');
             console.error('Error fetching data:', err);
@@ -248,7 +248,6 @@ export default function AdminDashboard() {
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
                               <div className="flex-shrink-0 h-8 w-8">
-                                <User className="h-8 w-8 text-gray-400" />
                               </div>
                               <div className="ml-4">
                                 <div className="text-sm font-medium text-gray-900">{user.email}</div>
@@ -258,14 +257,6 @@ export default function AdminDashboard() {
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
                               <div className="flex-shrink-0 h-8 w-8">
-                                <User className="h-8 w-8 text-gray-400" />
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center">
-                              <div className="flex-shrink-0 h-8 w-8">
-                                <User className="h-8 w-8 text-gray-400" />
                               </div>
                               <div className="ml-4">
                                 <div className="text-sm font-medium text-gray-900">{user.apiCalls}</div>
