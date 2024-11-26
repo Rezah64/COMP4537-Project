@@ -17,17 +17,27 @@ const getAllUsers = async (): Promise<UserType[]> => {
 
 const getEndpointStats = async (): Promise<EndpointStat[]> => {
   try {
-    const response = await api.get<EndpointStat[]>('/admin/endpointStats');
-    if (response) {
-      incrementCounterAPI('/admin/endpointStats');
+    const response = await api.get<{
+      statusCode: number;
+      body: string;
+      headers?: Record<string, string>;
+    }>('/admin/endpointStats');
+
+    if (response.data.statusCode === 200) {
+      const endpointStats = JSON.parse(response.data.body);
+      if (response.data) {
+        incrementCounterAPI('/admin/endpointStats');
+      }
+      return endpointStats;
+    } else {
+      console.error('Error fetching endpoint stats:', response.data);
+      return []; 
     }
-    return response.data;
   } catch (err) {
     console.error('Error fetching endpoint stats:', err);
     return []; 
   }
 };
-
 
 export default function AdminDashboard() {
   const [users, setUsers] = useState<UserType[]>([]);
