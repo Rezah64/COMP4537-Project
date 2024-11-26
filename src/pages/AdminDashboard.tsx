@@ -41,10 +41,8 @@ export default function AdminDashboard() {
     const fetchUsers = async () => {
         try {
             setIsLoading(true);
-            const [usersData, endpointsData] = await Promise.all([
-              getAllUsers(),
-              getEndpointStats()
-            ])
+            const usersData = await getAllUsers();
+            const endpointsData = await getEndpointStats()
             setUsers(usersData);
             setEndpointStats(endpointsData);
             const data = await getAllUsers();
