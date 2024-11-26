@@ -3,26 +3,30 @@ import { useNavigate } from 'react-router-dom';
 import { Users, LogOut, Activity, User } from 'lucide-react';
 import { useAuth } from '../auth/useAuth';
 import toast from 'react-hot-toast';
-import { User as UserType } from '../types'
+import { User as UserType, EndpointStat } from '../types'
 import { api } from '../auth/axios'
-
-interface UserStats {
-  id: string;
-  email: string;
-  name: string;
-  role: string;
-  apiCalls: number;
-  lastActive: string;
-}
+import { incrementCounterAPI } from '../utils/api';
 
 const getAllUsers = async (): Promise<UserType[]> => {
   const response = await api.get<UserType[]>('/admin/users');
+  if (response){
+    incrementCounterAPI('/admin/users');
+  }
+  return response.data.filter(user => user.role !== 'admin');
+};
+
+const getEndpointStats = async (): Promise<EndpointStat[]> => {
+  const response = await api.get<EndpointStat[]>('/admin/endpointStats');
+  if (response){
+    incrementCounterAPI('/admin/endpointStats');
+  }
   return response.data;
 };
 
 
 export default function AdminDashboard() {
-  const [users, setUsers] = useState<UserStats[]>([]);
+  const [users, setUsers] = useState<UserType[]>([]);
+  const [endpointStats, setEndpointStats] = useState<EndpointStat[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { logout } = useAuth();
@@ -32,11 +36,15 @@ export default function AdminDashboard() {
     const fetchUsers = async () => {
         try {
             setIsLoading(true);
-            const data = await getAllUsers();
-            setUsers(data);
+            const [usersData, endpointsData] = await Promise.all([
+              getAllUsers(),
+              getEndpointStats()
+            ])
+            setUsers(usersData);
+            setEndpointStats(endpointsData);
         } catch (err) {
-            setError('Failed to fetch users');
-            console.error('Error fetching users:', err);
+            setError('Failed to fetch data');
+            console.error('Error fetching data:', err);
         } finally {
             setIsLoading(false);
         }
@@ -48,6 +56,7 @@ export default function AdminDashboard() {
   const handleLogout = async () => {
     try {
       await logout();
+      incrementCounterAPI('/auth/logout');
       navigate('/login');
     } catch (error) {
       console.log(error)
@@ -114,6 +123,76 @@ export default function AdminDashboard() {
           </div>
         </div>
 
+        {/* Endpoints Stats Table */}
+        <div className="bg-white shadow rounded-lg overflow-hidden mb-8">
+          <div className="px-4 py-5 sm:px-6">
+            <h3 className="text-lg leading-6 font-medium text-gray-900">Endpoint Statistics</h3>
+          </div>
+          <div className="border-t border-gray-200">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Method
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Endpoint
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Requests
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {isLoading ? (
+                    <tr>
+                      <td colSpan={3} className="px-6 py-4 text-center text-sm text-gray-500">
+                        Loading...
+                      </td>
+                    </tr>
+                  ) : users.length === 0 ? (
+                    <tr>
+                      <td colSpan={3} className="px-6 py-4 text-center text-sm text-gray-500">
+                        No endpoint statistics found
+                      </td>
+                    </tr>
+                  ) : (
+                    endpointStats.map((stat, index) => (
+                      <tr key={index}>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                              <div className="flex-shrink-0 h-8 w-8">
+                                <User className="h-8 w-8 text-gray-400" />
+                              </div>
+                              <div className="ml-4">
+                                <div className="text-sm font-medium text-gray-900">{stat.method}</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                              <div className="flex-shrink-0 h-8 w-8">
+                                <User className="h-8 w-8 text-gray-400" />
+                              </div>
+                              <div className="ml-4">
+                                <div className="text-sm font-medium text-gray-900">{stat.endpoint}</div>
+                              </div>
+                            </div>
+                          </td>
+
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">{stat.requestCount}</div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
         {/* Users Table */}
         <div className="bg-white shadow rounded-lg overflow-hidden">
           <div className="px-4 py-5 sm:px-6">
@@ -129,9 +208,6 @@ export default function AdminDashboard() {
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Email
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Role
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       API Calls
@@ -150,17 +226,12 @@ export default function AdminDashboard() {
                     </tr>
                   ) : users.length === 0 ? (
                     <tr>
-                      <td colSpan={3} className="px-6 py-4 text-center text-sm text-gray-500">
+                      <td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500">
                         No users found
                       </td>
                     </tr>
                   ) : (
-                    users.map((user, index) => {
-                      if (user.role === "admin") {
-                        return null;
-                      }
-                    
-                      return (
+                    users.map((user, index) => (
                         <tr key={index}>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
@@ -187,23 +258,23 @@ export default function AdminDashboard() {
                               <div className="flex-shrink-0 h-8 w-8">
                                 <User className="h-8 w-8 text-gray-400" />
                               </div>
-                              <div className="ml-4">
-                                <div className="text-sm font-medium text-gray-900">{user.role}</div>
-                              </div>
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">{user.apiCalls}</div>
-                            <div className="text-sm text-gray-500">
-                              {user.apiCalls >= 20 ? 'Limit reached' : `${20 - user.apiCalls} remaining`}
+                            <div className="flex items-center">
+                              <div className="flex-shrink-0 h-8 w-8">
+                                <User className="h-8 w-8 text-gray-400" />
+                              </div>
+                              <div className="ml-4">
+                                <div className="text-sm font-medium text-gray-900">{user.apiCalls}</div>
+                              </div>
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {new Date(user.lastActive).toLocaleString()}
                           </td>
                         </tr>
-                      );
-                    })
+                      ))
                   )}
                 </tbody>
               </table>
