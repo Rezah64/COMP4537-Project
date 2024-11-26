@@ -19,7 +19,6 @@ const getEndpointStats = async (): Promise<EndpointStat[]> => {
   try {
     const response = await api.get('/admin/endpointStats');
       const endpointStats = response.data;
-      console.log("Endpoint stats: ", endpointStats);
       if (response.data) {
         incrementCounterAPI('/admin/endpointStats');
       }
