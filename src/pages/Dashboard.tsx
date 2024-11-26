@@ -128,6 +128,16 @@ export default function Dashboard() {
     }
   };
 
+  const handleDeleteAccount_ = async () => {
+    try {
+      await deleteAccount();
+      navigate('/login');
+      toast.success('Account deleted successfully');
+    } catch {
+      toast.error('Failed to delete account');
+    }
+  };
+
   return (
     <div className="flex flex-col h-screen bg-gradient-to-br from-purple-50 to-indigo-50">
       {/* Header */}
@@ -153,7 +163,7 @@ export default function Dashboard() {
             >
               Update Name
             </button>
-            <button onClick={handleDeleteAccount}>Delete Account</button>
+            <button onClick={handleDeleteAccount_}>Delete Account</button>
             <button
               onClick={handleLogout}
               className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
