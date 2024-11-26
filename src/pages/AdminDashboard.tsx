@@ -35,15 +35,15 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchUsers = async () => {
         try {
-            setIsLoading(true);
-            const [usersData, endpointsData] = await Promise.all([
-              getAllUsers(),
-              getEndpointStats()
-            ])
-            setUsers(usersData);
-            setEndpointStats(endpointsData);
-            // const data = await getAllUsers();
-            // setUsers(data);
+            // setIsLoading(true);
+            // const [usersData, endpointsData] = await Promise.all([
+            //   getAllUsers(),
+            //   getEndpointStats()
+            // ])
+            // setUsers(usersData);
+            // setEndpointStats(endpointsData);
+            const data = await getAllUsers();
+            setUsers(data);
         } catch (err) {
             setError('Failed to fetch data');
             console.error('Error fetching data:', err);
