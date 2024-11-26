@@ -22,15 +22,17 @@ export interface User {
   }
   
   export interface AuthContextType {
-    user: User | null;
-    isLoading: boolean;
-    error: string | null;
-    login: (data: LoginData) => Promise<void>;
-    register: (data: RegisterData) => Promise<void>;
-    logout: () => Promise<void>;
-    incrementApiCalls: () => boolean;
-    updateUser: (user: User) => void;
-  }
+  user: User | null;
+  isLoading: boolean;
+  error: string | null;
+  login: (data: LoginData) => Promise<void>;
+  register: (data: RegisterData) => Promise<void>;
+  logout: () => Promise<void>;
+  incrementApiCalls: () => boolean;
+  updateName: (name: string) => Promise<void>;
+  deleteAccount: () => Promise<void>;
+  updateUser: (user: User) => void;
+}
   
   export interface EndpointStat {
     method: string;
