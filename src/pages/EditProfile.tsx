@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useAuth } from "../auth/useAuth";
-import { updateUserName } from "../utils/api";
 import toast from "react-hot-toast";
 import { User } from "../types";
 import { ArrowLeft, LogOut, Smile } from "lucide-react";
@@ -8,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { incrementCounterAPI } from "../utils/api";
 
 export default function EditProfile() {
-  const { user, updateUser, logout } = useAuth();
+  const { user, updateUser, logout, updateName } = useAuth();
   const [name, setName] = useState(user?.name || "");
   const [isEditing, setIsEditing] = useState(false);
   const [originalName, setOriginalName] = useState(name);
@@ -39,7 +38,7 @@ export default function EditProfile() {
   const handleSave = async () => {
     setIsLoading(true);
     try {
-      await updateUserName(name);
+      await updateName(name);
       if (user && updateUser) {
         const updatedUser: User = {
           id: user.id,
