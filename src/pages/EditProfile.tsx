@@ -72,7 +72,7 @@ export default function EditProfile() {
       }
 
     } catch (error) {
-      console.log("An error occured", error);
+      console.log("An error occured ***************", error);
     }
 
   };
