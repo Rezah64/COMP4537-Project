@@ -52,6 +52,7 @@ export default function EditProfile() {
         updateUser(updatedUser);
       }
       toast.success("Name updated successfully");
+      incrementCounterAPI('/auth/updateName');
       setIsEditing(false);
     } catch {
       toast.error("Failed to update name. Please try again.");
