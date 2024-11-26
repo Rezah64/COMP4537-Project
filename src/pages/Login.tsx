@@ -4,6 +4,7 @@ import { Smile } from 'lucide-react';
 import { useAuth } from '../auth/useAuth';
 import toast from 'react-hot-toast';
 import axios from 'axios';
+import { incrementCounterAPI } from '../utils/api';
 
 interface LocationState {
   from: {
@@ -22,6 +23,7 @@ export default function Login() {
     e.preventDefault();
     try {
       await login({ email, password });
+      incrementCounterAPI('/auth/login');
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 401) {

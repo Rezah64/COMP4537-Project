@@ -1,4 +1,5 @@
 export const LLM_API_URL = import.meta.env.VITE_LLM_API_URL || 'http://localhost:3000';
+import { api } from '../auth/axios';
 
 if (!LLM_API_URL) {
   console.warn('API_URL is not defined in environment variables. Using localhost instead.');
@@ -70,3 +71,11 @@ export async function sendMessageToAPI(message: string): Promise<ApiResponse> {
     throw error;
   }
 }
+
+export async function incrementCounterAPI(endpoint: string) {
+  try {
+    api.post('/endpointCounter', {endpoint: endpoint});
+  } catch (error) {
+    console.error('Error incrementing API call:', error);
+  }
+};

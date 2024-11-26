@@ -4,6 +4,7 @@ import { useAuth } from '../auth/useAuth';
 import { sendMessageToAPI } from '../utils/api';
 import toast from 'react-hot-toast';
 import { Smile, LogOut, Send } from 'react-feather';
+import { incrementCounterAPI } from '../utils/api';
 
 interface Message {
   id: number;
@@ -59,6 +60,9 @@ export default function Dashboard() {
       if (!incrementApiCalls()) {
         return;
       }
+      if (response){
+        incrementCounterAPI('/admin/endpointStats');
+      }
     } catch {
       toast.error('Failed to get response');
     } finally {
@@ -69,6 +73,7 @@ export default function Dashboard() {
   const handleLogout = async () => {
     try {
       await logout();
+      incrementCounterAPI('/auth/logout');
       navigate('/login');
     } catch {
       toast.error('Failed to logout. Please try again.');

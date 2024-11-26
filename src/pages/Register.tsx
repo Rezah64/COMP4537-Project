@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Sparkles } from 'lucide-react';
 import { useAuth } from '../auth/useAuth';
 import toast from 'react-hot-toast';
+import { incrementCounterAPI } from '../utils/api';
 
 export default function Register() {
   const [name, setName] = useState('');
@@ -15,6 +16,7 @@ export default function Register() {
     e.preventDefault();
     try {
       await register({email, password, name});
+      incrementCounterAPI('/auth/register');
       navigate('/dashboard');
       toast.success('Welcome aboard! 🎉');
     } catch (error) {

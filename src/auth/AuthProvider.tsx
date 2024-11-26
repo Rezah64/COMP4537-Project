@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { User, LoginData, RegisterData, AuthResponse } from '../types';
 import { AuthContext } from './useAuth';
 import { api } from './axios';
+import { incrementCounterAPI } from '../utils/api';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -17,7 +18,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const response = await api.get<User>('/auth/me');
       console.log('/me response:', response.data);
-      
+
+      if (response){
+        incrementCounterAPI('/auth/me');
+      }
+
       const userData: User = {
         id: response.data.id,
         email: response.data.email,
@@ -48,6 +53,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const response = await api.post<AuthResponse>('/auth/login', data);
       setUser(response.data.user);
+      if (response){
+        incrementCounterAPI('/auth/login');
+      }
     } catch (err) {
       setError('Failed to login');
       throw err;
@@ -62,6 +70,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const response = await api.post<AuthResponse>('/auth/register', data);
       setUser(response.data.user);
+      if (response){
+        incrementCounterAPI('/auth/register');
+      }
     } catch (err) {
       setError('Failed to register');
       throw err;
@@ -75,6 +86,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await api.post('/auth/logout');
       setUser(null);
+      incrementCounterAPI('/auth/logout');
     } catch (err) {
       setError('Failed to logout');
       throw err;
