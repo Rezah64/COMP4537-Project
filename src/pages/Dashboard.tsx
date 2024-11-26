@@ -64,7 +64,7 @@ export default function Dashboard() {
         return;
       }
       if (response) {
-        incrementCounterAPI("/admin/endpointStats");
+        incrementCounterAPI("/process");
       }
     } catch {
       toast.error("Failed to get response");
