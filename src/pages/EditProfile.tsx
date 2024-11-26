@@ -7,11 +7,12 @@ import { useNavigate } from "react-router-dom";
 import { incrementCounterAPI } from "../utils/api";
 
 export default function EditProfile() {
-  const { user, updateUser, logout, updateName } = useAuth();
+  const { user, updateUser, logout, updateName, deleteAccount } = useAuth();
   const [name, setName] = useState(user?.name || "");
   const [isEditing, setIsEditing] = useState(false);
   const [originalName, setOriginalName] = useState(name);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const navigate = useNavigate();
 
@@ -47,7 +48,7 @@ export default function EditProfile() {
           isAdmin: user.isAdmin,
           apiCalls: user.apiCalls,
           createdAt: user.createdAt,
-          lastActive: user.lastActive
+          lastActive: user.lastActive,
         };
         updateUser(updatedUser);
       }
@@ -58,6 +59,21 @@ export default function EditProfile() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleDelete = async () => {
+    try {
+      const userId = user?.id;
+      if (userId) {
+        await deleteAccount(userId);
+      } else {
+        throw new Error("User ID is undefined");
+      }
+
+    } catch (error) {
+      console.log("An error occured", error);
+    }
+
   };
 
   return (
@@ -141,6 +157,41 @@ export default function EditProfile() {
                 </>
               )}
             </div>
+            <div>
+              <button
+                onClick={() => setIsDeleting(true)}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-700 focus:outline-none transition-colors duration-200"
+              >
+                Edit
+              </button>
+            </div>
+            {isDeleting && (
+              <div
+                className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50`}
+              >
+                <div className="mx-4 flex w-96 flex-col space-y-4 rounded-lg bg-white p-6">
+                  <h2 className="text-center text-2xl font-bold">
+                    Are you sure you want to delete your account?
+                  </h2>
+
+                  <p className="text-center font-medium text-gray-800">
+                    Action cannot be undone.
+                  </p>
+                  <button
+                    className="text-md mx-auto h-12 w-44 rounded bg-red-400 px-4 py-4 text-center font-bold text-white hover:bg-red-600"
+                    onClick={handleDelete}
+                  >
+                    Delete Account
+                  </button>
+                  <button
+                    className="text-md mx-auto h-12 w-44 rounded bg-slate-400 px-4 py-4 text-center font-bold text-white hover:bg-slate-600"
+                    onClick={() => setIsDeleting(false)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -30,7 +30,7 @@ export interface User {
   logout: () => Promise<void>;
   incrementApiCalls: () => boolean;
   updateName: (name: string) => Promise<void>;
-  deleteAccount: () => Promise<void>;
+  deleteAccount: (userId: string) => Promise<void>;
   updateUser: (user: User) => void;
 }
   
