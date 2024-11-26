@@ -18,17 +18,12 @@ const getAllUsers = async (): Promise<UserType[]> => {
 const getEndpointStats = async (): Promise<EndpointStat[]> => {
   try {
     const response = await api.get('/admin/endpointStats');
-    // if (response.data.statusCode === 200) {
       const endpointStats = response.data;
       console.log("Endpoint stats: ", endpointStats);
       if (response.data) {
         incrementCounterAPI('/admin/endpointStats');
       }
       return endpointStats;
-    // } else {
-    //   console.error('Error fetching endpoint stats:', response.data);
-    //   return []; 
-    // }
   } catch (err) {
     console.error('Error fetching endpoint stats:', err);
     return []; 
