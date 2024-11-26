@@ -63,9 +63,7 @@ export default function Dashboard() {
       if (!incrementApiCalls()) {
         return;
       }
-      if (response) {
-        incrementCounterAPI("/process");
-      }
+      incrementCounterAPI("/process");
     } catch {
       toast.error("Failed to get response");
     } finally {
