@@ -101,9 +101,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const response = await api.patch<User>('/auth/updateName', { name });
       setUser(response.data);
-      if (response) {
-        incrementCounterAPI('/auth/updateName');
-      }
     } catch (err) {
       setError('Failed to update name');
       throw err;
@@ -116,16 +113,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true);
     setError(null);
     try {
-      await api.delete('/auth/delete');
+      console.log('Attempting to delete account');
+      console.log('API URL:', api.defaults.baseURL);
+      const response = await api.delete('/auth/delete');
+      console.log('Delete response:', response);
       setUser(null);
-      incrementCounterAPI('/auth/delete');
     } catch (err) {
+      console.log('Delete error:', err);
       setError('Failed to delete account');
       throw err;
     } finally {
       setIsLoading(false);
     }
-  };
+};
 
   const incrementApiCalls = () => {
     if (!user) return false;
@@ -163,7 +163,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         logout,
         incrementApiCalls,
         updateName,
-        deleteAccount
+        deleteAccount,
+        updateUser: setUser
       }}
     >
       {children}

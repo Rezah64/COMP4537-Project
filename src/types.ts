@@ -31,6 +31,7 @@ export interface User {
   incrementApiCalls: () => boolean;
   updateName: (name: string) => Promise<void>;
   deleteAccount: () => Promise<void>;
+  updateUser: (user: User) => void;
 }
   
   export interface EndpointStat {

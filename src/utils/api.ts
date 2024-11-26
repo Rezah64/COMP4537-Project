@@ -79,3 +79,12 @@ export async function incrementCounterAPI(endpoint: string) {
     console.error('Error incrementing API call:', error);
   }
 };
+
+export async function updateUserName(name: string) {
+  try {
+    api.patch('/updateName', { name });
+  } catch (error) {
+    console.log('Error communicating with the API:', error);
+    throw error;
+  }
+}

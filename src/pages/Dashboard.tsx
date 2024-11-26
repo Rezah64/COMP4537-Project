@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../auth/useAuth';
-import { sendMessageToAPI } from '../utils/api';
-import toast from 'react-hot-toast';
-import { Smile, LogOut, Send } from 'react-feather';
-import { incrementCounterAPI } from '../utils/api';
+import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/useAuth";
+import { sendMessageToAPI } from "../utils/api";
+import toast from "react-hot-toast";
+import { Smile, LogOut, Send } from "react-feather";
+import { incrementCounterAPI } from "../utils/api";
 
 interface Message {
   id: number;
@@ -14,14 +14,14 @@ interface Message {
 
 export default function Dashboard() {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { user, logout, incrementApiCalls, updateName, deleteAccount } = useAuth();
   const navigate = useNavigate();
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -45,26 +45,29 @@ export default function Dashboard() {
     if (!input.trim()) return;
 
     const userMessage = { id: Date.now(), text: input, isUser: true };
-    setMessages(prev => [...prev, userMessage]);
-    setInput('');
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
     setIsLoading(true);
 
     try {
       const response = await sendMessageToAPI(input, user?.email);
-      setMessages(prev => [...prev, {
-        id: Date.now(),
-        text: response.response,
-        isUser: false
-      }]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now(),
+          text: response.response,
+          isUser: false,
+        },
+      ]);
 
       if (!incrementApiCalls()) {
         return;
       }
-      if (response){
-        incrementCounterAPI('/admin/endpointStats');
+      if (response) {
+        incrementCounterAPI("/admin/endpointStats");
       }
     } catch {
-      toast.error('Failed to get response');
+      toast.error("Failed to get response");
     } finally {
       setIsLoading(false);
     }
@@ -73,10 +76,10 @@ export default function Dashboard() {
   const handleLogout = async () => {
     try {
       await logout();
-      incrementCounterAPI('/auth/logout');
-      navigate('/login');
+      incrementCounterAPI("/auth/logout");
+      navigate("/login");
     } catch {
-      toast.error('Failed to logout. Please try again.');
+      toast.error("Failed to logout. Please try again.");
     }
   };
 
@@ -84,12 +87,48 @@ export default function Dashboard() {
     try {
       await updateName('Test User Updated');
       toast.success('Name updated successfully!');
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/auth/updateName`,
+        {
+          method: "PATCH",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name: "Test User Updated" }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update name");
+      }
+
+      toast.success("Name updated successfully!");
     } catch {
-      toast.error('Failed to update name');
+      toast.error("Failed to update name");
     }
   };
-  
+
   const handleDeleteAccount = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/delete`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to delete account');
+      }
+      
+      await logout();
+      navigate('/login');
+      toast.success('Account deleted successfully');
+    } catch {
+      toast.error("Failed to delete account");
+    }
+  };
+
+  const handleDeleteAccount_ = async () => {
     try {
       await deleteAccount();
       navigate('/login');
@@ -106,14 +145,25 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
             <Smile className="h-8 w-8 text-indigo-600" />
-            <h1 className="text-xl font-semibold text-gray-900">Mood Booster</h1>
+            <h1 className="text-xl font-semibold text-gray-900">
+              Mood Booster
+            </h1>
           </div>
           <div className="flex items-center space-x-4">
             <div className="text-sm text-gray-600">
-              API Calls: <span className="font-medium">{user?.apiCalls || 0}/20</span>
+              API Calls:{" "}
+              <span className="font-medium">{user?.apiCalls || 0}/20</span>
             </div>
             <button onClick={handleUpdateName}>Update Name</button>
-            <button onClick={handleDeleteAccount}>Delete Account</button>
+            <button
+              className={
+                "inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-400 hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
+              }
+              onClick={() => navigate("/userProfile")}
+            >
+              Update Name
+            </button>
+            <button onClick={handleDeleteAccount_}>Delete Account</button>
             <button
               onClick={handleLogout}
               className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
@@ -131,13 +181,15 @@ export default function Dashboard() {
           {messages.map((message) => (
             <div
               key={message.id}
-              className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
+              className={`flex ${
+                message.isUser ? "justify-end" : "justify-start"
+              }`}
             >
               <div
                 className={`max-w-sm rounded-lg px-4 py-2 ${
                   message.isUser
-                    ? 'bg-indigo-600 text-white'
-                    : 'bg-white text-gray-900 shadow-sm'
+                    ? "bg-indigo-600 text-white"
+                    : "bg-white text-gray-900 shadow-sm"
                 }`}
               >
                 <p className="text-sm">{message.text}</p>
@@ -149,8 +201,14 @@ export default function Dashboard() {
               <div className="bg-white rounded-lg px-4 py-2 shadow-sm">
                 <div className="flex space-x-2">
                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
+                  <div
+                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                    style={{ animationDelay: "0.2s" }}
+                  />
+                  <div
+                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                    style={{ animationDelay: "0.4s" }}
+                  />
                 </div>
               </div>
             </div>
