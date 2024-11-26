@@ -17,7 +17,7 @@ export default function Dashboard() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { user, logout, incrementApiCalls, updateName } = useAuth();
+  const { user, logout, incrementApiCalls } = useAuth();
   const navigate = useNavigate();
 
   const scrollToBottom = () => {
@@ -83,32 +83,6 @@ export default function Dashboard() {
     }
   };
 
-  const handleUpdateName = async () => {
-    try {
-      await updateName('Test User Updated');
-      toast.success('Name updated successfully!');
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/auth/updateName`,
-        {
-          method: "PATCH",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ name: "Test User Updated" }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to update name");
-      }
-
-      toast.success("Name updated successfully!");
-    } catch {
-      toast.error("Failed to update name");
-    }
-  };
-
   return (
     <div className="flex flex-col h-screen bg-gradient-to-br from-purple-50 to-indigo-50">
       {/* Header */}
@@ -125,7 +99,6 @@ export default function Dashboard() {
               API Calls:{" "}
               <span className="font-medium">{user?.apiCalls || 0}/20</span>
             </div>
-            <button onClick={handleUpdateName}>Update Name</button>
             <button
               className={
                 "inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-400 hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
