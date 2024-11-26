@@ -12,7 +12,7 @@ const getAllUsers = async (): Promise<UserType[]> => {
   if (response){
     incrementCounterAPI('/admin/users');
   }
-  return response.data.filter(user => !user.isAdmin);
+  return response.data.filter(user => user.isAdmin == false);
 };
 
 const getEndpointStats = async (): Promise<EndpointStat[]> => {
