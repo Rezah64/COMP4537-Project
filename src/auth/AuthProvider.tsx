@@ -27,7 +27,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         id: response.data.id,
         email: response.data.email,
         name: response.data.name,
-        role: response.data.role,
+        isAdmin: response.data.isAdmin,
         apiCalls: response.data.apiCalls,
         createdAt: response.data.createdAt,
         lastActive: response.data.lastActive
