@@ -21,7 +21,7 @@ export default function ProtectedRoute({ children, requireAdmin = false }: Prote
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (requireAdmin && user.role !== 'admin') {
+  if (requireAdmin && !user.isAdmin) {
     return <Navigate to="/dashboard" replace />;
   }
 
