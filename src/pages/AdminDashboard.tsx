@@ -16,11 +16,16 @@ const getAllUsers = async (): Promise<UserType[]> => {
 };
 
 const getEndpointStats = async (): Promise<EndpointStat[]> => {
-  const response = await api.get<EndpointStat[]>('/admin/endpointStats');
-  if (response){
-    incrementCounterAPI('/admin/endpointStats');
+  try {
+    const response = await api.get<EndpointStat[]>('/admin/endpointStats');
+    if (response) {
+      incrementCounterAPI('/admin/endpointStats');
+    }
+    return response.data;
+  } catch (err) {
+    console.error('Error fetching endpoint stats:', err);
+    return []; 
   }
-  return response.data;
 };
 
 
@@ -35,13 +40,13 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchUsers = async () => {
         try {
-            // setIsLoading(true);
-            // const [usersData, endpointsData] = await Promise.all([
-            //   getAllUsers(),
-            //   getEndpointStats()
-            // ])
-            // setUsers(usersData);
-            // setEndpointStats(endpointsData);
+            setIsLoading(true);
+            const [usersData, endpointsData] = await Promise.all([
+              getAllUsers(),
+              getEndpointStats()
+            ])
+            setUsers(usersData);
+            setEndpointStats(endpointsData);
             const data = await getAllUsers();
             setUsers(data);
         } catch (err) {
