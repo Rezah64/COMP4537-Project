@@ -67,6 +67,7 @@ export default function EditProfile() {
       const userId = user?.id;
       if (userId) {
         await deleteAccount(userId);
+        incrementCounterAPI('/auth/deleteAccount');
         navigate('/login');
       } else {
         throw new Error("User ID is undefined");
