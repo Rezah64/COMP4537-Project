@@ -18,7 +18,7 @@ const getAllUsers = async (): Promise<UserType[]> => {
 const getEndpointStats = async (): Promise<EndpointStat[]> => {
   try {
     const response = await api.get('/admin/endpointStats');
-      const endpointStats = JSON.parse(response.data.body);
+      const endpointStats = response.data.body;
       console.log(endpointStats);
       if (response.data) {
         incrementCounterAPI('/admin/endpointStats');
