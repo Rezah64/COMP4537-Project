@@ -29,6 +29,7 @@ export interface User {
     register: (data: RegisterData) => Promise<void>;
     logout: () => Promise<void>;
     incrementApiCalls: () => boolean;
+    updateUser: (user: User) => void;
   }
   
   export interface EndpointStat {
