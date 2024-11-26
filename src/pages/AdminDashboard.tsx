@@ -117,7 +117,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="ml-5 w-0 flex-1">
                   <dl>
-                    <dt className="text-sm font-medium text-gray-500 truncate">Total API Calls</dt>
+                    <dt className="text-sm font-medium text-gray-500 truncate">Total User Prompted API Calls</dt>
                     <dd className="text-lg font-medium text-gray-900">
                       {users.reduce((sum, user) => sum + user.apiCalls, 0)}
                     </dd>
