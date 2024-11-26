@@ -95,6 +95,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const updateName = async (name: string) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await api.patch<User>('/auth/updateName', { name });
+      setUser(response.data);
+      if (response) {
+        incrementCounterAPI('/auth/updateName');
+      }
+    } catch (err) {
+      setError('Failed to update name');
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const deleteAccount = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      await api.delete('/auth/delete');
+      setUser(null);
+      incrementCounterAPI('/auth/delete');
+    } catch (err) {
+      setError('Failed to delete account');
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const incrementApiCalls = () => {
     if (!user) return false;
 
@@ -129,7 +161,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         login,
         register,
         logout,
-        incrementApiCalls
+        incrementApiCalls,
+        updateName,
+        deleteAccount
       }}
     >
       {children}

@@ -17,7 +17,7 @@ export default function Dashboard() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { user, logout, incrementApiCalls } = useAuth();
+  const { user, logout, incrementApiCalls, updateName, deleteAccount } = useAuth();
   const navigate = useNavigate();
 
   const scrollToBottom = () => {
@@ -82,19 +82,7 @@ export default function Dashboard() {
 
   const handleUpdateName = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/updateName`, {
-        method: 'PATCH',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: 'Test User Updated' })
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to update name');
-      }
-      
+      await updateName('Test User Updated');
       toast.success('Name updated successfully!');
     } catch {
       toast.error('Failed to update name');
@@ -103,16 +91,7 @@ export default function Dashboard() {
   
   const handleDeleteAccount = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/delete`, {
-        method: 'DELETE',
-        credentials: 'include'
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to delete account');
-      }
-      
-      await logout();
+      await deleteAccount();
       navigate('/login');
       toast.success('Account deleted successfully');
     } catch {
