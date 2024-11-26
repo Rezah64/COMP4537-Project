@@ -163,7 +163,7 @@ export default function EditProfile() {
                 onClick={() => setIsDeleting(true)}
                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-700 focus:outline-none transition-colors duration-200"
               >
-                Edit
+                Delete Account
               </button>
             </div>
             {isDeleting && (
