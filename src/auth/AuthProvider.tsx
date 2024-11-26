@@ -110,7 +110,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const deleteAccount = async (userId: string) => {
     try {
-      const response = await api.delete<User>("/auth/deleteAccount", {
+      const response = await api.delete("/auth/deleteAccount", {
         data: { user_id: userId }
       });
       console.log("Delete response:", response);
