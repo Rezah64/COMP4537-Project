@@ -31,3 +31,8 @@ export interface User {
     incrementApiCalls: () => boolean;
   }
   
+  export interface EndpointStat {
+    method: string;
+    endpoint: string;
+    requestCount: number;
+  }
